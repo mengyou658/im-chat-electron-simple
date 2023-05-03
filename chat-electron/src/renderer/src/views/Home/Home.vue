@@ -375,7 +375,7 @@ function toCheckVerificationCode() {
 .main {
   width: 100%;
   min-width: 1200px;
-  height: 90%;
+  height: 100%;
   background-color: @primary-bgcolor;
   display: flex;
   align-items: center;
