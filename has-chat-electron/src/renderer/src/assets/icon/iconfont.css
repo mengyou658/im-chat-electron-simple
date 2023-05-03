@@ -1,0 +1,61 @@
+/* CDN 服务仅供平台体验和调试使用，平台不承诺服务的稳定性，企业客户需下载字体包自行发布使用并做好备份。 */
+@font-face {
+  font-family: "iconfont"; /* Project id 3028828 */
+  /* Color fonts */
+  src: 
+       url('iconfont.woff2?t=1664010659692') format('woff2'),
+       url('iconfont.woff?t=1664010659692') format('woff'),
+       url('iconfont.ttf?t=1664010659692') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-merbe:before {
+  content: "\e605";
+}
+
+.icon-message:before {
+  content: "\e642";
+}
+
+.icon-biaoqing:before {
+  content: "\e600";
+}
+
+.icon-tupian:before {
+  content: "\e660";
+}
+
+.icon-guanji:before {
+  content: "\e632";
+}
+
+.icon-shuaxin:before {
+  content: "\e64f";
+}
+
+.icon-youxiang:before {
+  content: "\e64c";
+}
+
+.icon-dunpai:before {
+  content: "\e639";
+}
+
+.icon-shipin:before {
+  content: "\e606";
+}
+
+.icon-baitian:before {
+  content: "\e769";
+}
+
+.icon-heian:before {
+  content: "\e781";
+}
