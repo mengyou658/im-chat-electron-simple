@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, getCurrentInstance, watch } from "vue";
-import chatim from "../../components/chatim.vue";
+import chat from "../../components/chat.vue";
 import { useMainStore } from "../../store/main";
 const store = useMainStore();
 
@@ -52,7 +52,7 @@ watch(
   </n-switch>
   <div class="main">
     <div class="content">
-      <has-chat></has-chat>
+      <chat></chat>
     </div>
   </div>
 </template>

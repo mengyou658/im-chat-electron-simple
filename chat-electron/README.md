@@ -1,4 +1,4 @@
-# has-chat-electron
+# chat-electron
 
 An Electron application with Vue and TypeScript
 

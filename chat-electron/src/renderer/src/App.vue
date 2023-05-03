@@ -3,7 +3,6 @@ import { getCurrentInstance, provide, onMounted, ref } from "vue";
 const { proxy }: any = getCurrentInstance();
 import { useMainStore } from "./store/main";
 const store = useMainStore();
-import MainFooter from "./components/MainFooter.vue";
 import { darkTheme } from "naive-ui";
 provide: {
   store;
@@ -77,7 +76,6 @@ onMounted(() => {
   </div>
   <n-message-provider>
     <router-view></router-view>
-    <main-footer></main-footer>
   </n-message-provider>
 </template>
 

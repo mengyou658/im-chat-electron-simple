@@ -7,13 +7,13 @@ import {
   sendVerificationCode,
   getRandomUser,
   checkVerificationCode,
-} from "../../api/user";
+} from "../../api/user.js";
 import axios from "axios";
 import { useMessage } from "naive-ui";
 const messageBox = useMessage();
 import { useMainStore } from "../../store/main";
 const store = useMainStore();
-import { InitData } from "@/pageJs/home";
+import { InitData } from "./js/home";
 onMounted(() => {
   // 聚焦文库
   proxy.$refs.userCode.focus();
@@ -24,7 +24,7 @@ onMounted(() => {
 });
 
 let data = reactive(new InitData());
-
+data.showModal = false
 // 回车登陆
 document.onkeydown = function (ev: any) {
   let Event: any = ev || event;
@@ -152,17 +152,11 @@ function getRandom() {
 
 // 切换登陆注册
 function tiggerSelect() {
-  if (data.isLogin == 1) {
-    initChangeStage(0);
-    proxy.$nextTick(() => {
-      proxy.$refs.emailInput.focus();
-    });
-  } else {
-    initChangeStage(1);
-    proxy.$nextTick(() => {
-      proxy.$refs.userCode.focus();
-    });
-  }
+  data.showModal = true;
+  initChangeStage(1);
+  proxy.$nextTick(() => {
+    proxy.$refs.userCode.focus();
+  });
 }
 
 // 发送邮箱验证码
@@ -251,7 +245,6 @@ function toCheckVerificationCode() {
           </n-tooltip>
         </div>-->
 
-        <template v-if="data.isLogin == 1">
           <div class="form-group">
             <input
               type="text"
@@ -275,75 +268,13 @@ function toCheckVerificationCode() {
             @click="toLogin"
             >登录</n-button
           >
-        </template>
-        <template v-else>
-          <div class="form-group">
-            <input
-              type="text"
-              class="form-control form-control-lg"
-              placeholder="QQ邮箱"
-              v-model="data.registerForm.email"
-              ref="emailInput"
-            />
-          </div>
-          <n-button
-            class="login-btn"
-            :color="store.theme == 'default' ? '#161A21' : '#409EFF'"
-            @click="openModel"
-            :loading="data.loading"
-            >{{ data.loading ? "获取数据中" : "注册" }}</n-button
-          >
-        </template>
         <div class="sign-bottom">
-          <div v-if="data.isLogin == 1" @click="tiggerSelect">立即注册</div>
-          <div v-else @click="tiggerSelect">立即登陆</div>
+          <div @click="tiggerSelect">立即注册</div>
         </div>
       </div>
     </main>
     <n-modal v-model:show="data.showModal">
-      <div v-if="data.step == 1" class="tip-content">
-        <div class="popup-header">
-          <span class="iconfont icon-youxiang"></span>
-        </div>
-        <div class="form-group">
-          <input
-            type="text"
-            class="form-code form-control-lg"
-            placeholder=""
-            :maxlength="6"
-            v-model="data.verificationCode"
-          />
-        </div>
-        <div class="tip-bottom">
-          <n-button
-            v-if="!data.sendVerificationCodeState"
-            class="btn"
-            :color="store.theme == 'default' ? '#161A21' : '#409EFF'"
-            @click="toSendVerificationCode"
-            >获取验证码</n-button
-          >
-          <n-button
-            v-else
-            class="btn"
-            :color="store.theme == 'default' ? '#161A21' : '#409EFF'"
-            :disabled="data.sendVerificationCodeState"
-            >已发送({{ data.countdown }})</n-button
-          >
-          <n-button
-            class="btn"
-            :disabled="
-              !(
-                data.verificationCode.length == 6 &&
-                data.hasSendVerificationCode
-              )
-            "
-            :color="store.theme == 'default' ? '#161A21' : '#409EFF'"
-            @click="toCheckVerificationCode"
-            >下一步</n-button
-          >
-        </div>
-      </div>
-      <div v-else class="tip-content" style="height: 450px">
+      <div class="tip-content" style="height: 450px">
         <div class="popup-header">
           <span class="iconfont icon-dunpai"></span>
         </div>
@@ -353,6 +284,15 @@ function toCheckVerificationCode() {
             class="form-control form-control-lg"
             placeholder="用户姓名"
             v-model="data.registerForm.name"
+          />
+        </div>
+        <div class="form-group">
+          <input
+            type="text"
+            class="form-control form-control-lg"
+            placeholder="邮箱"
+            v-model="data.registerForm.email"
+            ref="emailInput"
           />
         </div>
         <div class="form-group">
