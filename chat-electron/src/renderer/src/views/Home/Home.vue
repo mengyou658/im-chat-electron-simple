@@ -222,29 +222,11 @@ function toCheckVerificationCode() {
 <template>
   <div class="main">
     <main class="sign-main">
-<!--      <div class="image-box">
-        <img :src="'/gif/' + data.gifIndex + '.gif'" alt="" />
-        &lt;!&ndash; <img src="../../assets/gif/1.gif" alt="" /> &ndash;&gt;
-      </div>-->
+      <div class="image-box">
+        <img :src="'/gif/5.jpg'" alt="" />
+        <!-- <img src="../../assets/gif/1.gif" alt="" /> -->
+      </div>
       <div class="sign-box">
-<!--        <div class="row-center title-box">
-          <div class="title">好久没聊了</div>
-          <n-tooltip
-            placement="right-end"
-            v-if="data.isLogin == 1"
-            :show="data.showPopover"
-            :show-arrow="false"
-            :style="{
-              background: store.theme == 'default' ? '#161A21' : '#409EFF',
-            }"
-          >
-            <template #trigger>
-              <span class="iconfont icon-shuaxin" @click="getRandom"></span>
-            </template>
-            随机获取一位账户登陆
-          </n-tooltip>
-        </div>-->
-
           <div class="form-group">
             <input
               type="text"
@@ -274,7 +256,7 @@ function toCheckVerificationCode() {
       </div>
     </main>
     <n-modal v-model:show="data.showModal">
-      <div class="tip-content" style="height: 450px">
+      <div class="tip-content" style="height: 530px">
         <div class="popup-header">
           <span class="iconfont icon-dunpai"></span>
         </div>
@@ -331,7 +313,7 @@ function toCheckVerificationCode() {
   border: 1px solid @primary-bg3color;
   box-shadow: none;
   width: 400px;
-  height: 350px;
+  height: 400px;
   padding: 20px;
   border-radius: 10px;
   .popup-header {
