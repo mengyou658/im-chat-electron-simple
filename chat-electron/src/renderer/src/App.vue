@@ -14,7 +14,7 @@ if (proxy.$common && proxy.$common.isLogin()) {
     store.sender = JSON.parse(sender);
   }
   proxy.$router.replace({
-    name: "HasChat",
+    name: "chatim",
   });
 }
 

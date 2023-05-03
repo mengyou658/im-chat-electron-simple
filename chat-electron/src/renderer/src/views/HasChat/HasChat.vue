@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, getCurrentInstance, watch } from "vue";
-import HasChat from "../../components/HasChat.vue";
+import chatim from "../../components/chatim.vue";
 import { useMainStore } from "../../store/main";
 const store = useMainStore();
 

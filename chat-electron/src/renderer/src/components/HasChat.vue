@@ -155,7 +155,7 @@ function initSocket() {
       store.playMusic();
       if (window.Notification && Notification.permission !== "denied") {
         Notification.requestPermission(function (status) {
-          var n = new Notification("HasChat消息通知", {
+          var n = new Notification("chatim消息通知", {
             body: "你有一条新的消息",
           });
         });
