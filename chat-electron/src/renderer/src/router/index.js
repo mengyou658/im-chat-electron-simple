@@ -8,7 +8,7 @@ const routes = [
 ];
 
 const router = createRouter({
-  history: createWebHistory('/chatim'),
+  history: createWebHashHistory('/chatim'),
   routes,
 });
 

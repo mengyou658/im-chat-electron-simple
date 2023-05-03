@@ -23,7 +23,10 @@ export const useMainStore = defineStore({
         { id: 2, name: "用户", icon: "icon-merbe" },
       ],
       conversitionList: [],
-      expressions: expressions,
+      expressions: expressions.map(it => {
+        it.icon = '.' + it.icon
+        return it
+      }),
       expressionShow: false,
       contentScrollbar: null,
       chatEditor: null,

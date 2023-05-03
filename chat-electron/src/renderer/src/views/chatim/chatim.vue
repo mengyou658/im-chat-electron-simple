@@ -3,6 +3,7 @@ import { onMounted, getCurrentInstance, watch } from "vue";
 import chat from "../../components/chat.vue";
 import { useMainStore } from "../../store/main";
 const store = useMainStore();
+const mp3Url = './mp3/msgTip.mp3'
 
 // 声音switch样式
 const railStyle = ({ focused, checked }: any) => {
@@ -40,7 +41,7 @@ watch(
 <template>
   <!--接收信息提示音-->
   <audio id="tipMusic">
-    <source src="/mp3/msgTip.mp3" type="audio/mp3" />
+    <source :src="mp3Url" type="audio/mp3" />
   </audio>
   <n-switch
     class="music-btn"

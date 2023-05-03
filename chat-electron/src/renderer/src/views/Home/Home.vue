@@ -223,7 +223,7 @@ function toCheckVerificationCode() {
   <div class="main">
     <main class="sign-main">
       <div class="image-box">
-        <img :src="'/gif/5.jpg'" alt="" />
+        <img :src="'./gif/5.jpg'" alt="" />
         <!-- <img src="../../assets/gif/1.gif" alt="" /> -->
       </div>
       <div class="sign-box">

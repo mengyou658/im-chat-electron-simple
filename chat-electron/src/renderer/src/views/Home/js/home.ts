@@ -1,6 +1,6 @@
 import type { IData } from "@/type/home";
 class InitData implements IData {
-  form: { email: string; password: string; } = { email: "", password: "" };
+  form: { email: string; password: string; } = { email: "test@qq.com", password: "123456" };
   registerForm: { name: string; email: string; password: string; surePassword: string; avatar: string } = {
     name: "",
     email: "",
