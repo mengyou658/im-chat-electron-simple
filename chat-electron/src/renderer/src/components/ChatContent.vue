@@ -109,7 +109,7 @@ function getRevicerStatus(SendId) {
                   >
                 </div>
                 <div
-                  v-if="item.Type == 0"
+                  v-if="item.Type == 0 || item.Type == 4 || item.Type == 5"
                   class="block"
                   v-html="item.Content"
                 ></div>
@@ -147,7 +147,7 @@ function getRevicerStatus(SendId) {
                   <img v-bind:src="item.Avatar" />
                 </div>
                 <div
-                  v-if="item.Type == 0"
+                  v-if="item.Type == 0 || item.Type == 4 || item.Type == 5"
                   class="block"
                   v-html="item.Content"
                 ></div>

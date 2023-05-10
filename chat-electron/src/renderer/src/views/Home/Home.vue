@@ -11,6 +11,7 @@ import {
 import axios from "axios";
 import { useMessage } from "naive-ui";
 const messageBox = useMessage();
+window.$message = useMessage()
 import { useMainStore } from "../../store/main";
 const store = useMainStore();
 import { InitData } from "./js/home";

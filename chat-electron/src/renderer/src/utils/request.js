@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // create an axios instance
 const service = axios.create({
-  baseURL: import.meta.env.VITE_BASE_MYAPI || "http://localhost:9527", // url = base url + request url
+  baseURL: import.meta.env.RENDERER_VITE_BASE_API || "http://localhost:9527", // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 30000, // request timeout
 });

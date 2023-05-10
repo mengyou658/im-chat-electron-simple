@@ -1,5 +1,5 @@
-import { resolve } from 'path'
-import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
+import {resolve} from 'path'
+import {defineConfig, externalizeDepsPlugin} from 'electron-vite'
 import vue from '@vitejs/plugin-vue'
 import path from "path"
 
@@ -11,6 +11,7 @@ export default defineConfig({
     plugins: [externalizeDepsPlugin()]
   },
   renderer: {
+
     resolve: {
       alias: {
         '@': resolve('src/renderer/src'),
@@ -20,17 +21,20 @@ export default defineConfig({
     },
     plugins: [vue()],
     css: {
-    preprocessorOptions: {
-      scss: {
-        additionalData: `@import "@/assets/css/common.less";`,
-      },
-      less: {
-        javascriptEnabled: true,
-        modifyVars: {
-          hack: `true; @import (reference) "${path.resolve('src/renderer/src/assets/style/variables.less')}";`
+      preprocessorOptions: {
+        scss: {
+          additionalData: `@import "@/assets/css/common.less";`,
+        },
+        less: {
+          javascriptEnabled: true,
+          modifyVars: {
+            hack: `true; @import (reference) "${path.resolve('src/renderer/src/assets/style/variables.less')}";`
+          }
         }
       }
-    }
-  },
+    },
+    server: {
+      host: true,
+    },
   }
 })

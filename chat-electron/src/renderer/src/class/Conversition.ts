@@ -18,6 +18,7 @@ export default class Conversition {
   Content: string;
   Type: number;
   State: number;
+  CallState: number; // 0=发起通话，1=同意通话，2=拒绝通话
   NoCode: string;
   CreateDateUtc: string;
   Title: string;

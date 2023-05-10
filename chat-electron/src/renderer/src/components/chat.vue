@@ -9,10 +9,14 @@ import io from "socket.io-client";
 import { useMainStore } from "../store/main";
 const store = useMainStore();
 import Conversition from "../class/Conversition";
-import { onMounted, getCurrentInstance, reactive } from "vue";
+import {onMounted, getCurrentInstance, reactive, ref} from "vue";
+import Peer from "peerjs";
 const { proxy }: any = getCurrentInstance();
-
-const chatUrl: any = import.meta.env.VITE_BASE_API || "ws://localhost:9527";
+import { useMessage } from 'naive-ui'
+const messageBox = useMessage();
+window.$message = useMessage()
+const chatUrl: any = import.meta.env.RENDERER_VITE_BASE_API_WS || "ws://localhost:9527";
+const audioDataRef = ref<InstanceType<typeof AudioNode> | null>(null);
 
 const stateData = reactive({
   page: {
@@ -31,6 +35,14 @@ const stateData = reactive({
   loadHistorySessionAll: false,
   loadContentAll: false,
 });
+
+const footerStyle = {
+  color: 'white',
+}
+
+const headerStyle = {
+  color: 'white',
+}
 
 onMounted(() => {
   init();
@@ -194,6 +206,31 @@ function initSocket() {
       };
       store.sessionList.push(session);
     }
+    // 展示语音框
+    if (data.Type == 4) {
+      console.log('conversion data', data.SendId, data.ReciverId, store.reciver.Id, data.Content, data.Type, data.CallState, store.peerInstance.starter)
+      if (data.CallState == 0) {
+      // 收到语音通话
+        store.peerInstance.audioData.show = true
+      } else if (data.CallState == 1 && store.peerInstance.instance && store.peerInstance.starter) {
+        // 收到同意语音通话
+        store.peerInstance.audioData.show = true
+        let conn = store.peerInstance.instance.connect('imchatelectronsimple-' + data.SendId);
+        conn.on('open', () => {
+          console.log('conn opened', data.SendId, data.ReciverId)
+        });
+        const call = store.peerInstance.instance.call('imchatelectronsimple-' +data.SendId, store.peerInstance.stream);
+        console.log('conversion data call start', call)
+        call.on("stream", (streamRemote) => {
+          // Show stream in some <video> element.
+          store.peerInstance.streamRemote = streamRemote;
+          store.peerInstance.audioData.stateText = "通话中。。。";
+          audioDataRef.value.srcObject = streamRemote
+        });
+      }
+
+    }
+
     store.toBottom();
   });
   //多设备在线时，强制旧设备下线
@@ -207,6 +244,66 @@ function initSocket() {
     }
   });
 }
+
+
+function stopCallAudio() {
+  audioDataRef.value.srcObject = null
+  store.stopCallAudio()
+}
+
+function startAnswerCallAudio() {
+  audioDataRef.value.muted = false
+  // TODO
+  let self = this
+  if (store.peerInstance.instance) {
+    messageBox.warning("正在通话中");
+    store.peerInstance.audioData.show = true;
+    return
+  }
+
+  var peerInstance = new Peer('imchatelectronsimple-' +store.sender.Id, {
+    host: import.meta.env.RENDERER_VITE_BASE_API_HOST,
+    port: import.meta.env.RENDERER_VITE_BASE_API_PORT,
+    path: "/peerjs",
+  })
+
+  store.peerInstance.instance = peerInstance
+
+  peerInstance.on('open', (id) => {
+    console.info('My peer ID is: ' + id);
+  });
+  peerInstance.on('error', (error) => {
+    console.error('peer error', error);
+  });
+
+  if (!navigator.mediaDevices) {
+
+  }
+
+  store.sendAudioMsg("语音开始", 4, 1);
+  peerInstance.on("call", (call) => {
+
+    navigator.mediaDevices.getUserMedia(
+      { video: true, audio: true }).then(
+      (stream) => {
+        store.peerInstance.stream = stream;
+        call.answer(stream); // Answer the call with an A/V stream.
+
+        call.on("stream", (streamRemote) => {
+          // Show stream in some <video> element.
+          store.peerInstance.streamRemote = streamRemote;
+          store.peerInstance.audioData.stateText = "通话中。。。";
+          audioDataRef.value.srcObject = streamRemote
+        });
+      },
+
+    ).catch((err) => {
+      console.error("Failed to get local stream", err);
+      messageBox.error("发起语音通话失败")
+    })
+  });
+}
+
 </script>
 
 <template>
@@ -214,6 +311,44 @@ function initSocket() {
     <chat-nav />
     <chat-domain />
     <chat-content />
+    <n-modal
+      v-model:show="store.peerInstance.audioData.show"
+      :closable="false"
+      :close-on-esc="false"
+      :mask-closable="false"
+      class="custom-card"
+      preset="card"
+      style="width: 300px;background-color: #1c1f23;color: white"
+      :footer-style="footerStyle"
+      :header-style="headerStyle"
+      :header-extra-style="headerStyle"
+      title="语音聊天"
+      size="huge"
+      :bordered="false"
+      :segmented="{
+        content: 'soft',
+        footer: 'soft'
+      }"
+    >
+      <template #header>
+        <span style="color: white">语音聊天</span>
+      </template>
+      <template #header-extra>
+        <i class="w-e-icon-terminal"></i>
+      </template>
+      <template #default>
+        <div>
+          <div >{{store.peerInstance.audioData.stateText}}</div>
+          <video controls id="audio-sender" ref="audioDataRef" style="width: 100%;height: 100px;" autoplay></video>
+        </div>
+      </template>
+      <template #action>
+        <div>
+          <n-button @click="stopCallAudio">挂断</n-button>
+          <n-button contr @click="startAnswerCallAudio" v-if="!store.peerInstance.starter && !store.peerInstance.instance">接听</n-button>
+        </div>
+      </template>
+    </n-modal>
   </div>
 </template>
 

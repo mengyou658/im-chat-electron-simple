@@ -11,6 +11,7 @@ import { uploadFile } from "@/api/common";
 
 const editor = ref(null);
 
+
 // 切换表情包
 function changeExpression() {
   store.expressionShow = !store.expressionShow;
@@ -27,6 +28,11 @@ function blurHighLight(data: string) {
   // 这里做数据过滤或样式变更操作
   store.sendInfo = data;
 }
+
+function startCallAudio() {
+  store.startCallAudio()
+}
+
 
 //发送图片
 function sendImage(e: any) {
@@ -95,7 +101,7 @@ function uploadFileFun(tempFilePath: string) {
         if (res?.length > 0) {
           result.code = 200;
           result.content =
-            "http://localhost:9527" +
+            import.meta.env.MAIN_VITE_BASE_API +
             `/api/getFile?url=${res[0].filename}${res[0].originalname}`;
           resolve(result);
         } else {
@@ -164,6 +170,9 @@ function sendVerify(content: string, type: number) {
             v-on:change="sendVideo"
           />
         </li>
+        <li @click="startCallAudio">
+          语音聊天
+        </li>
       </ul>
     </div>
     <!--表情包-->
@@ -188,6 +197,7 @@ function sendVerify(content: string, type: number) {
       class="answer-editor"
       placeholder=" "
     ></chat-editor>
+
   </footer>
 </template>
 

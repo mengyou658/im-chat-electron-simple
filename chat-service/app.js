@@ -6,6 +6,7 @@ const nodemailer = require('nodemailer');
 const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
+const { ExpressPeerServer } = require("peer");
 
 const { emailConfig, nowTime } = require('./config');
 const {
@@ -259,7 +260,7 @@ app.post('/api/sendVerificationCode', async function (req, res) {
         let mailObj = {
           from: `来自<${emailConfig.auth.user}>`, // 发送方邮箱及标题
           to: email, // 对方邮箱地址
-          subject: '【chatim】账号注册', // 
+          subject: '【chatim】账号注册', //
           html: `您正在注册chatim账号，本次请求的邮件验证码是：<b>${verificationCode}</b>（如非本人操作，请忽略该信息）` // html格式
         };
         transporter.sendMail(mailObj);
@@ -677,10 +678,29 @@ app.post('/api/getContentBySendId', async function (req, res) {
   }
 })
 
-const server = app.listen(9527, function () {
-  console.log("server running on port 9527");
+const serverPort = config.serverPort
+const server = app.listen(serverPort, '0.0.0.0',function () {
+  console.log("server running on port " + serverPort);
 });
 
+const peerServer = ExpressPeerServer(server, {
+  debug: true,
+  path: "/",
+});
+peerServer.on('connection', (client) => {
+  console.log('connection', client.getId())
+});
+
+peerServer.on('disconnect', (client) => {
+  console.log('connection', client.getId())
+
+});
+peerServer.on('error', (err) => {
+  console.log('error', err)
+
+});
+
+app.use("/peerjs", peerServer);
 const io = socket(server, {
   cors: {
     origin: "*",
@@ -783,4 +803,22 @@ io.on("connection", function (socket) {
       updateUserOnlineStateById(queryResult.data[0].Id, false)
     }
   })
+  //开始呼叫
+  socket.on("startCall", async (data) => {
+    try {
+      socket.emit("sendMsg", data);
+    } catch (err) {
+      console.log(err.message);
+    }
+  })
+
+  //开始呼叫
+  socket.on("endCall", async (data) => {
+    try {
+      socket.emit("sendMsg", data);
+    } catch (err) {
+      console.log(err.message);
+    }
+  })
+
 });

@@ -1,8 +1,10 @@
-import { defineStore } from 'pinia'
+import {defineStore} from 'pinia'
 import User from "../class/User"
 import expressions from "../json/expressions.json"
 import Conversition from "../class/Conversition"
 import E from "wangeditor";
+import Peer from "peerjs";
+import { util as peerUtil } from "peerjs";
 
 export const useMainStore = defineStore({
   id: 'main',
@@ -19,8 +21,8 @@ export const useMainStore = defineStore({
       socket: null,
       noCode: +new Date,
       navList: [
-        { id: 1, name: "消息", icon: "icon-message" },
-        { id: 2, name: "用户", icon: "icon-merbe" },
+        {id: 1, name: "消息", icon: "icon-message"},
+        {id: 2, name: "用户", icon: "icon-merbe"},
       ],
       conversitionList: [],
       expressions: expressions.map(it => {
@@ -35,6 +37,18 @@ export const useMainStore = defineStore({
       openMusic: false,
       tipMusic: null,
       theme: "default",
+      peerInstance: {
+        instance: null,
+        stream: null,
+        streamRemote: null,
+        starter: false,
+        call: null,
+        chatId: null,
+        audioData: {
+          show: false,
+          stateText: '等待接听。。。',
+        },
+      },
     }
   },
   persist: {
@@ -62,7 +76,7 @@ export const useMainStore = defineStore({
     // 设置会话窗口到达底部
     toBottom() {
       setTimeout(() => {
-        this.contentScrollbar.scrollTo({ top: 99999 });
+        this.contentScrollbar.scrollTo({top: 99999});
       }, 100)
     },
     // 修改信息已读状态
@@ -141,7 +155,106 @@ export const useMainStore = defineStore({
       if (this.socket != null) {
         this.socket.disconnect();
       }
+      if (this.peerInstance.instance) {
+        this.stopCallAudio()
+      }
       window.location.reload();
     },
+    startCallAudio() {
+      let self = this
+      if (!this.peerInstance || this.peerInstance.instance) {
+        window.$message.warning("正在通话中");
+        console.log('正在通话中')
+        self.peerInstance.audioData.show = true;
+        return
+      }
+
+      var peerInstance = new Peer('imchatelectronsimple-' +this.sender.Id, {
+        host: import.meta.env.RENDERER_VITE_BASE_API_HOST,
+        port: import.meta.env.RENDERER_VITE_BASE_API_PORT,
+        path: "/peerjs",
+      })
+      console.log('peerInstance init success')
+
+      this.peerInstance.instance = peerInstance
+
+      peerInstance.on('open', (id) => {
+        console.info('My peer ID is: ' + id);
+      });
+      peerInstance.on('error', (error) => {
+        console.error('peer error', error);
+      });
+
+
+      navigator.mediaDevices.getUserMedia(
+        {video: false, audio: true}).then(
+        (stream) => {
+          self.sendAudioMsg("开始发起语音", 4, 0);
+          console.log('peerInstance init success')
+          self.peerInstance.audioData.show = true;
+          self.peerInstance.starter = true;
+          self.peerInstance.stream = stream;
+          console.log('发起语音')
+          // audioDataRef.value.srcObject = stream
+          // const call = peerInstance.call(this.reciver.Id, stream);
+          // call.on("stream", (remoteStream) => {
+          //   // Show stream in some <video> element.
+          // });
+        }
+      ).catch((err) => {
+        console.error("Failed to get local stream", err);
+        window.$message.error("发起语音通话失败")
+        self.peerInstance.instance?.destroy()
+        self.peerInstance.stream?.getTracks().forEach(it => it.stop())
+        self.peerInstance.instance = null
+      })
+    },
+
+    sendAudioMsg(content: string, type: number, CallState: number) {
+      let noCode = +new Date() + "";
+      let reciverId = this.reciver?.FormId || this.reciver.Id;
+      let conversition = new Conversition(
+        this.sender.Id,
+        reciverId,
+        content,
+        type,
+        0,
+        noCode,
+        "",
+        "",
+        "",
+        "",
+        "",
+        false,
+        this.sender.Avatar
+      );
+      conversition.CallState = CallState || 0
+      if (this.socket == null) {
+        window.$message.warning("socket实例为空");
+        return;
+      }
+      this.sendLocal(conversition);
+      this.sendInfo(conversition);
+    },
+    stopCallAudio() {
+      // audioDataRef.value.srcObject = null
+      this.peerInstance.audioData.show = false;
+      this.peerInstance.instance?.destroy()
+      this.peerInstance.stream?.getTracks().forEach(it => it.stop())
+      this.peerInstance.instance = null
+      this.peerInstance = {
+        instance: null,
+        stream: null,
+        streamRemote: null,
+        starter: false,
+        call: null,
+        chatId: null,
+        audioData: {
+          show: false,
+          stateText: '等待接听。。。',
+        },
+      }
+    }
+
   }
 })
